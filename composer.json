@@ -1,0 +1,46 @@
+{
+  "name": "webcraft/lunar-mollie",
+  "type": "project",
+  "description": "Mollie payment driver for Lunar.",
+  "keywords": ["lunarphp", "laravel", "ecommerce", "e-commerce", "headless", "store", "shop", "cart", "mollie"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Webcraft",
+      "homepage": "https://www.webcraft.be/"
+    }
+  ],
+  "require": {
+      "php": "^8.0",
+      "lunarphp/lunar": "^0.3",
+      "livewire/livewire": "^2.0",
+    "mollie/mollie-api-php": "^2.0"
+  },
+  "require-dev": {
+      "phpunit/phpunit": "^9.5",
+      "mockery/mockery": "^1.4.4",
+      "orchestra/testbench": "^6.0|^7.0"
+  },
+  "autoload": {
+      "psr-4": {
+          "Webcraft\\Lunar\\Mollie\\": "src/"
+      }
+  },
+  "autoload-dev": {
+      "psr-4": {
+          "Webcraft\\Lunar\\Mollie\\Tests\\": "tests/"
+      }
+  },
+  "extra": {
+    "lunar": {
+        "name": "Mollie Payments"
+    },
+    "laravel": {
+        "providers": [
+            "Webcraft\\Lunar\\Mollie\\MolliePaymentsServiceProvider"
+        ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
