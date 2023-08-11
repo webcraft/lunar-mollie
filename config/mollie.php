@@ -36,6 +36,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Payment status mappings
+    |--------------------------------------------------------------------------
+    |
+    | The payment statuses you receive from Mollie will be mapped to the statuses
+    | of your orders using the mapping below. Ideally, the values on the right
+    | hand side should also be present in your lunar/orders.php config file.
+    */
+
+    'payment_status_mappings' => [
+        'open' => 'payment-open',
+        'canceled' => 'payment-canceled',
+        'pending' => 'payment-pending',
+        'expired' => 'payment-expired',
+        'failed' => 'payment-failed',
+        'paid' => 'payment-received',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Payment methods
     |--------------------------------------------------------------------------
     |

@@ -137,7 +137,7 @@ class MolliePaymentType extends AbstractPayment
         if ($payment->status === 'paid') {
             $this->order->placed_at = $payment->paidAt;
         }
-        $this->order->status = $payment->status === 'paid' ? 'payment-received' : $payment->status; //TODO add mapper
+        $this->order->status = config('lunar.mollie.payment_status_mappings.' . $payment->status) ?: $payment->status;
         $this->order->save();
 
         return new PaymentAuthorize(success: $payment->status === 'paid', message: json_encode(['status' => $payment->status]));
