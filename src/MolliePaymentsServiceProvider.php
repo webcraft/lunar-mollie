@@ -52,6 +52,8 @@ class MolliePaymentsServiceProvider extends ServiceProvider
             __DIR__ . '/../resources/views' => resource_path('views/vendor/lunar'),
         ], 'lunar.mollie.components');
 
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'lunar');
+
         // Register the mollie payment component.
         Livewire::component('mollie.payment', PaymentForm::class);
     }

@@ -2,33 +2,35 @@
 
 namespace Webcraft\Lunar\Mollie\Components;
 
+use Illuminate\Http\RedirectResponse;
 use Livewire\Component;
 use Lunar\Facades\Payments;
 use Lunar\Models\Cart;
+use Webcraft\Lunar\Mollie\Enums\PaymentMethod;
 
 class PaymentForm extends Component
 {
-    /**
-     * The instance of the order.
-     *
-     * @var Cart
-     */
     public Cart $cart;
 
-    public function handleSubmit()
-    {
-        $payment = Payments::driver('mollie')->cart($this->cart)->withData([
-            'description' => config('lunar.mollie.payment_description'),
-            'redirectRoute' => config('lunar.mollie.redirect_route'),
-            'webhookUrl' => config('lunar.mollie.override_webhook_url') ?: route(config('lunar.mollie.webhook_route')),
-        ])->initiatePayment();
+    public ?PaymentMethod $paymentMethod;
 
-        return $this->redirect($payment->getCheckoutUrl(), 303);
+    public function getPaymentMethods(): array
+    {
+        return array_map(fn($paymentMethod) => PaymentMethod::from($paymentMethod), config('lunar.mollie.payment_methods'));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    public function handleSubmit(?string $paymentMethod = null)
+    {
+        $payment = Payments::driver('mollie')->cart($this->cart)->withData([
+            'description' => trans('lunar::mollie.payment_description', ['order_id' => $this->cart->id]),
+            'redirectRoute' => config('lunar.mollie.redirect_route'),
+            'webhookUrl' => config('lunar.mollie.override_webhook_url') ?: route(config('lunar.mollie.webhook_route')),
+            'method' => $paymentMethod,
+        ])->initiatePayment();
+
+        $this->redirect($payment->getCheckoutUrl());
+    }
+
     public function render()
     {
         return view('lunar::mollie.components.payment-form');

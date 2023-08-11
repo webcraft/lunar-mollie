@@ -54,6 +54,7 @@ class MolliePaymentType extends AbstractPayment
             "description" => str_replace(':order_reference', $this->order->reference, $this->data['description']),
             "redirectUrl" => route($this->data['redirectRoute'], ['order' => $this->order->id, 'transaction' => $transaction->id]),
             "webhookUrl" => $this->data['webhookUrl'],
+            "method" => $this->data['method'] ?? null,
             "metadata" => [
                 "order_id" => $this->order->id,
             ],
