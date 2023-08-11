@@ -10,6 +10,7 @@ use Lunar\Models\Transaction;
 use Lunar\PaymentTypes\AbstractPayment;
 use Mollie\Api\Exceptions\ApiException;
 use Mollie\Api\MollieApiClient;
+use Mollie\Api\Resources\Refund;
 
 class MolliePaymentType extends AbstractPayment
 {
@@ -101,9 +102,18 @@ class MolliePaymentType extends AbstractPayment
             );
         }
 
+        foreach ($payment->refunds() as $refund) {
+            $transaction = $this->order->refunds->where('reference', $refund->id)->first();
+            if ($transaction) {
+                $transaction->update([
+                    'status' => $refund->status,
+                ]);
+            }
+        }
+
         if ($this->order->placed_at) {
             return new PaymentAuthorize(
-                success: false,
+                success: true,
                 message: json_encode(['status' => 'duplicate', 'message' => 'This order has already been placed']),
             );
         }
@@ -142,7 +152,7 @@ class MolliePaymentType extends AbstractPayment
      */
     public function capture(Transaction $transaction, $amount = 0): PaymentCapture
     {
-        //Policy not implemented for the moment
+        //Not applicable for Mollie
 
         return new PaymentCapture(success: true);
     }
