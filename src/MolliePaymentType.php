@@ -9,22 +9,16 @@ use Lunar\Models\Order;
 use Lunar\Models\Transaction;
 use Lunar\PaymentTypes\AbstractPayment;
 use Mollie\Api\Exceptions\ApiException;
-use Mollie\Api\MollieApiClient;
-use Mollie\Api\Resources\Refund;
+use Mollie\Api\Resources\Payment;
+use Mollie\Laravel\Wrappers\MollieApiWrapper;
 
 class MolliePaymentType extends AbstractPayment
 {
-    protected MollieApiClient $mollie;
-
-    /**
-     * Initialise the payment type.
-     */
-    public function __construct(MollieApiClient $mollie)
+    public function __construct(protected MollieApiWrapper $mollie)
     {
-        $this->mollie = $mollie;
     }
 
-    public function initiatePayment(): \Mollie\Api\Resources\Payment
+    public function initiatePayment(): Payment
     {
         if (!$this->order) {
             if (!$this->order = $this->cart->order) {
@@ -70,11 +64,6 @@ class MolliePaymentType extends AbstractPayment
         return $payment;
     }
 
-    /**
-     * Authorize the payment for processing.
-     *
-     * @return \Lunar\Base\DataTransferObjects\PaymentAuthorize
-     */
     public function authorize(): PaymentAuthorize
     {
         if (!array_key_exists('paymentId', $this->data)) {
@@ -85,6 +74,7 @@ class MolliePaymentType extends AbstractPayment
         }
 
         $payment = $this->mollie->payments->get($this->data['paymentId']);
+
         $orderId = $payment->metadata->order_id;
 
         $transaction = Transaction
@@ -143,13 +133,6 @@ class MolliePaymentType extends AbstractPayment
         return new PaymentAuthorize(success: $payment->status === 'paid', message: json_encode(['status' => $payment->status]));
     }
 
-    /**
-     * Capture a payment for a transaction.
-     *
-     * @param \Lunar\Models\Transaction $transaction
-     * @param int $amount
-     * @return \Lunar\Base\DataTransferObjects\PaymentCapture
-     */
     public function capture(Transaction $transaction, $amount = 0): PaymentCapture
     {
         //Not applicable for Mollie
@@ -157,14 +140,6 @@ class MolliePaymentType extends AbstractPayment
         return new PaymentCapture(success: true);
     }
 
-    /**
-     * Refund a captured transaction
-     *
-     * @param \Lunar\Models\Transaction $transaction
-     * @param int $amount
-     * @param string|null $notes
-     * @return \Lunar\Base\DataTransferObjects\PaymentRefund
-     */
     public function refund(Transaction $transaction, int $amount = 0, $notes = null): PaymentRefund
     {
         try {

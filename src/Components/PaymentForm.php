@@ -2,7 +2,6 @@
 
 namespace Webcraft\Lunar\Mollie\Components;
 
-use Illuminate\Http\RedirectResponse;
 use Livewire\Component;
 use Lunar\Facades\Payments;
 use Lunar\Models\Cart;
@@ -22,7 +21,7 @@ class PaymentForm extends Component
     public function handleSubmit(?string $paymentMethod = null)
     {
         $payment = Payments::driver('mollie')->cart($this->cart)->withData([
-            'description' => trans('lunar::mollie.payment_description', ['order_id' => $this->cart->id]),
+            'description' => trans('lunar::mollie.payment_description'),
             'redirectRoute' => config('lunar.mollie.redirect_route'),
             'webhookUrl' => config('lunar.mollie.override_webhook_url') ?: route(config('lunar.mollie.webhook_route')),
             'method' => $paymentMethod,

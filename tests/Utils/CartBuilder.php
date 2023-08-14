@@ -33,6 +33,7 @@ class CartBuilder
 
         ShippingManifest::addOption(
             new ShippingOption(
+                name: 'Basic Delivery',
                 description: 'Basic Delivery',
                 identifier: 'BASDEL',
                 price: new Price(500, $cart->currency, 1),
@@ -59,6 +60,8 @@ class CartBuilder
 
         CartLine::factory()->create([
             'cart_id' => $cart->id,
+            'purchasable_type' => ProductVariant::class,
+            'purchasable_id' => ProductVariant::first(),
         ]);
 
         return $cart;
