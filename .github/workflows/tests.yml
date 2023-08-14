@@ -1,0 +1,27 @@
+name: Tests
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ 8.1, 8.2 ]
+        laravel: [ 9.*, 10.* ]
+    name: PHP:${{ matrix.php }} / Laravel:${{ matrix.laravel }}
+    steps:
+      - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+        with:
+          php-version: ${{ matrix.php }}
+      - uses: actions/checkout@v3
+      - name: Install Composer Dependencies
+        run: |
+          composer require "laravel/framework:${{ matrix.laravel }}" --no-interaction --no-update --dev
+          composer update --prefer-stable --no-interaction --no-suggest
+      - name: Execute tests
+        run: composer test
