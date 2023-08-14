@@ -28,6 +28,7 @@ return [
     */
     'redirect_route' => 'mollie.redirect',
     'webhook_route' => 'mollie.webhook',
+    'override_webhook_url' => env('MOLLIE_WEBHOOK_URL', null),
 
     'payment_paid_route' => 'checkout-success.view',
     'payment_canceled_route' => 'checkout-canceled.view',

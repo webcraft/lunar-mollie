@@ -44,6 +44,8 @@ class MolliePaymentsServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom(__DIR__ . '/../config/mollie.php', 'lunar.mollie');
 
+        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'lunar');
+
         $this->publishes([
             __DIR__ . '/../config/mollie.php' => config_path('lunar/mollie.php'),
         ], 'lunar.mollie.config');
@@ -52,7 +54,9 @@ class MolliePaymentsServiceProvider extends ServiceProvider
             __DIR__ . '/../resources/views' => resource_path('views/vendor/lunar'),
         ], 'lunar.mollie.components');
 
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'lunar');
+        $this->publishes([
+            __DIR__ . '/../lang' => lang_path(),
+        ], 'lunar.mollie.translations');
 
         // Register the mollie payment component.
         Livewire::component('mollie.payment', PaymentForm::class);
