@@ -7,7 +7,7 @@ use Lunar\Facades\Payments;
 use Lunar\Models\Order;
 use Lunar\Models\Transaction;
 
-class MollieController
+class MollieRedirectController
 {
     public function redirect(Order $order, Transaction $transaction)
     {
