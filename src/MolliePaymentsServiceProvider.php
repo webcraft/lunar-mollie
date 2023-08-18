@@ -55,7 +55,7 @@ class MolliePaymentsServiceProvider extends ServiceProvider
         ], 'lunar.mollie.components');
 
         $this->publishes([
-            __DIR__ . '/../lang' => lang_path(),
+            __DIR__ . '/../lang' => lang_path('vendor/lunar'),
         ], 'lunar.mollie.translations');
 
         // Register the mollie payment component.
