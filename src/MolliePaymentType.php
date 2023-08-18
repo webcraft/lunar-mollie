@@ -21,8 +21,9 @@ class MolliePaymentType extends AbstractPayment
     public function initiatePayment(): Payment
     {
         if (!$this->order) {
-            if (!$this->order = $this->cart->order) {
+            if (!$this->order = $this->cart->draftOrder) {
                 $this->order = $this->cart->createOrder();
+                $this->cart->load('draftOrder');
             }
         }
 
