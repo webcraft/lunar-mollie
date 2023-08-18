@@ -31,15 +31,4 @@ class MollieRedirectController
 
         return redirect()->route(config('lunar.mollie.payment_paid_route'));
     }
-
-    public function webhook(Request $request)
-    {
-        $paymentId = $request->input('id');
-
-        Payments::driver('mollie')->withData([
-            'paymentId' => $paymentId,
-        ])->authorize();
-
-        return response(null, 200);
-    }
 }
