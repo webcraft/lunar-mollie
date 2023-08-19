@@ -24,6 +24,8 @@ class MolliePaymentType extends AbstractPayment
             if (!$this->order = $this->cart->draftOrder) {
                 $this->order = $this->cart->createOrder();
                 $this->cart->load('draftOrder');
+            } else {
+                $this->order = $this->cart->createOrder(orderIdToUpdate: $this->cart->draftOrder->id);
             }
         }
 
