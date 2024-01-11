@@ -61,7 +61,7 @@ return [
     |
     | By setting specify_payment_methods to true, you integrate the selection
     | of payment methods into your checkout page. By setting it to false,
-    | usres will see Mollie's own payment method selection screen.
+    | users will see Mollie's own payment method selection screen.
     |
     | If you set specify_payment_methods to true, you need to specify every
     | payment method that must be available in the payment_methods array.
