@@ -247,3 +247,7 @@ composer test
 ## Contributing
 
 Contributions are welcome, if you are thinking of adding a feature, please submit an issue first.
+
+## About Webcraft
+
+[Webcraft](https://www.webcraft.be) is the company of Michiel Loncke, a freelance web developer from Belgium, specialized in building custom web applications and e-commerce solutions using Laravel and Lunar. If you need help with your project, feel free to [get in touch](https://www.webcraft.be/contact). 
