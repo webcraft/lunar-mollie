@@ -9,12 +9,13 @@ use Lunar\Models\Order;
 use Lunar\Models\Transaction;
 use Lunar\PaymentTypes\AbstractPayment;
 use Mollie\Api\Exceptions\ApiException;
+use Mollie\Api\MollieApiClient;
 use Mollie\Api\Resources\Payment;
 use Mollie\Laravel\Wrappers\MollieApiWrapper;
 
 class MolliePaymentType extends AbstractPayment
 {
-    public function __construct(protected MollieApiWrapper $mollie)
+    public function __construct(protected MollieApiClient $mollie)
     {
     }
 
