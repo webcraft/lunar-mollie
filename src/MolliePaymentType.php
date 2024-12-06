@@ -11,7 +11,6 @@ use Lunar\PaymentTypes\AbstractPayment;
 use Mollie\Api\Exceptions\ApiException;
 use Mollie\Api\MollieApiClient;
 use Mollie\Api\Resources\Payment;
-use Mollie\Laravel\Wrappers\MollieApiWrapper;
 
 class MolliePaymentType extends AbstractPayment
 {

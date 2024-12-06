@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Lunar\Facades\Payments;
 use Mollie\Api\MollieApiClient;
+use Mollie\Laravel\MollieLaravelHttpClientAdapter;
 use Webcraft\Lunar\Mollie\Components\PaymentForm;
 
 class MolliePaymentsServiceProvider extends ServiceProvider
@@ -24,7 +25,7 @@ class MolliePaymentsServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(MollieApiClient::class, function ($app) {
-            $mollie = new MollieApiClient();
+            $mollie = new MollieApiClient(new MollieLaravelHttpClientAdapter());
 
             if (!config('lunar.mollie.test_mode')) {
                 $mollie->setApiKey(config('lunar.mollie.live_key'));
