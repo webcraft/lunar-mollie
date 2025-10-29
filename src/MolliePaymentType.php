@@ -7,6 +7,7 @@ use Lunar\Base\DataTransferObjects\PaymentCapture;
 use Lunar\Base\DataTransferObjects\PaymentRefund;
 use Lunar\Models\Order;
 use Lunar\Models\Transaction;
+use Lunar\Models\Contracts\Transaction as TransactionContract;
 use Lunar\PaymentTypes\AbstractPayment;
 use Mollie\Api\Exceptions\ApiException;
 use Mollie\Api\MollieApiClient;
@@ -136,14 +137,14 @@ class MolliePaymentType extends AbstractPayment
         return new PaymentAuthorize(success: $payment->status === 'paid', message: json_encode(['status' => $payment->status]));
     }
 
-    public function capture(Transaction $transaction, $amount = 0): PaymentCapture
+    public function capture(TransactionContract $transaction, $amount = 0): PaymentCapture
     {
         //Not applicable for Mollie
 
         return new PaymentCapture(success: true);
     }
 
-    public function refund(Transaction $transaction, int $amount = 0, $notes = null): PaymentRefund
+    public function refund(TransactionContract $transaction, int $amount = 0, $notes = null): PaymentRefund
     {
         try {
             $refund = $this->mollie->paymentRefunds->createForId(
