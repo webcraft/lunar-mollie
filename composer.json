@@ -39,7 +39,7 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^10.0|^11.00",
-        "lunarphp/lunar": "^1.0.0-beta.6",
+        "lunarphp/lunar": "^1.0.0",
         "livewire/livewire": "^3.0",
         "mollie/laravel-mollie": "^v3.0.0"
     },
