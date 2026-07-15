@@ -2,6 +2,7 @@
 
 namespace Webcraft\Lunar\Mollie;
 
+use Illuminate\Support\Facades\DB;
 use Lunar\Base\DataTransferObjects\PaymentAuthorize;
 use Lunar\Base\DataTransferObjects\PaymentCapture;
 use Lunar\Base\DataTransferObjects\PaymentRefund;
@@ -87,54 +88,63 @@ class MolliePaymentType extends AbstractPayment
             ->where('driver', 'mollie')
             ->first();
 
-        $this->order = Order::find($orderId);
-
-        if (!$transaction || !$payment || !$this->order) {
+        if (!$transaction || !$payment) {
             return new PaymentAuthorize(
                 success: false,
                 message: json_encode(['status' => 'not_found', 'message' => 'No transaction found for payment ID ' . $this->data['paymentId']]),
             );
         }
 
-        foreach ($payment->refunds() as $refund) {
-            $transaction = $this->order->refunds->where('reference', $refund->id)->first();
-            if ($transaction) {
+        return DB::transaction(function () use ($payment, $transaction, $orderId) {
+            $this->order = Order::where('id', $orderId)->lockForUpdate()->first();
+
+            if (!$this->order) {
+                return new PaymentAuthorize(
+                    success: false,
+                    message: json_encode(['status' => 'not_found', 'message' => 'No order found for payment ID ' . $this->data['paymentId']]),
+                );
+            }
+
+            foreach ($payment->refunds() as $refund) {
+                $refundTransaction = $this->order->refunds->where('reference', $refund->id)->first();
+                if ($refundTransaction) {
+                    $refundTransaction->update([
+                        'status' => $refund->status,
+                    ]);
+                }
+            }
+
+            if ($this->order->placed_at) {
+                return new PaymentAuthorize(
+                    success: true,
+                    message: json_encode(['status' => 'duplicate', 'message' => 'This order has already been placed']),
+                );
+            }
+
+            if (is_null($payment->amountRefunded) || $payment->amountRefunded->value === '0.00') {
                 $transaction->update([
-                    'status' => $refund->status,
+                    'success' => $payment->isPaid(),
+                    'status' => $payment->status,
+                    'notes' => $payment->description,
+                    'card_type' => $payment->method ?? '',
+                    'meta' => [
+                        'method' => $payment->method,
+                        'locale' => $payment->locale,
+                        'details' => $payment->details,
+                        'links' => $payment->_links,
+                        'countryCode' => $payment->countryCode,
+                    ],
                 ]);
             }
-        }
 
-        if ($this->order->placed_at) {
-            return new PaymentAuthorize(
-                success: true,
-                message: json_encode(['status' => 'duplicate', 'message' => 'This order has already been placed']),
-            );
-        }
+            if ($payment->status === 'paid') {
+                $this->order->placed_at = $payment->paidAt;
+            }
+            $this->order->status = config('lunar.mollie.payment_status_mappings.' . $payment->status) ?: $payment->status;
+            $this->order->save();
 
-        if (is_null($payment->amountRefunded) || $payment->amountRefunded->value === '0.00') {
-            $transaction->update([
-                'success' => $payment->isPaid(),
-                'status' => $payment->status,
-                'notes' => $payment->description,
-                'card_type' => $payment->method ?? '',
-                'meta' => [
-                    'method' => $payment->method,
-                    'locale' => $payment->locale,
-                    'details' => $payment->details,
-                    'links' => $payment->_links,
-                    'countryCode' => $payment->countryCode,
-                ],
-            ]);
-        }
-
-        if ($payment->status === 'paid') {
-            $this->order->placed_at = $payment->paidAt;
-        }
-        $this->order->status = config('lunar.mollie.payment_status_mappings.' . $payment->status) ?: $payment->status;
-        $this->order->save();
-
-        return new PaymentAuthorize(success: $payment->status === 'paid', message: json_encode(['status' => $payment->status]));
+            return new PaymentAuthorize(success: $payment->status === 'paid', message: json_encode(['status' => $payment->status]));
+        });
     }
 
     public function capture(TransactionContract $transaction, $amount = 0): PaymentCapture
