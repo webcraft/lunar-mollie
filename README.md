@@ -12,9 +12,24 @@ This addon provides an implementation of Lunar's AbstractPayment interface for M
 
 ## Requirements
 
-- Lunar >= `0.4`
+- PHP 8.2+
+- Laravel 11, 12 or 13
+- Lunar 1.3+ (Laravel 13 requires Lunar 1.5+)
 - A [Mollie](https://mollie.com/) account
 - Laravel Livewire (if using frontend components)
+
+### Supported version combinations
+
+This package follows the versions that Lunar itself supports, rather than independently targeting the newest PHP or Laravel release.
+
+| PHP | Laravel | Lunar | Status |
+| --- | --- | --- | --- |
+| 8.2 | 11 | 1.3 | Supported |
+| 8.3+ | 11 | 1.3 | Supported |
+| 8.3+ | 12 | 1.3 | Supported (Laravel 12 + Lunar 1.3 needs PHP 8.3+) |
+| 8.3+ | 12 or 13 | 1.5+ | Supported (Lunar 1.5 is currently in beta) |
+
+PHP 8.5 is allowed by the PHP constraint (`^8.2`). Lunar 2.x is not supported yet.
 
 ## Installation
 

@@ -4,11 +4,9 @@ namespace Webcraft\Lunar\Mollie\Tests;
 
 use Cartalyst\Converter\Laravel\ConverterServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Config;
 use Kalnoy\Nestedset\NestedSetServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Lunar\LunarServiceProvider;
-use Lunar\Tests\Stubs\User;
 use Mollie\Laravel\MollieServiceProvider;
 use Spatie\Activitylog\ActivitylogServiceProvider;
 use Spatie\LaravelBlink\BlinkServiceProvider;
@@ -30,16 +28,25 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     protected function getPackageProviders($app)
     {
-        return [
+        $providers = [
             LunarServiceProvider::class,
             MediaLibraryServiceProvider::class,
             ActivitylogServiceProvider::class,
-            ConverterServiceProvider::class,
-            NestedSetServiceProvider::class,
             BlinkServiceProvider::class,
             LivewireServiceProvider::class,
             MollieServiceProvider::class,
             MolliePaymentsServiceProvider::class,
         ];
+
+        // Lunar 1.3 still depends on these packages; Lunar 1.5 removed them.
+        if (class_exists(ConverterServiceProvider::class)) {
+            $providers[] = ConverterServiceProvider::class;
+        }
+
+        if (class_exists(NestedSetServiceProvider::class)) {
+            $providers[] = NestedSetServiceProvider::class;
+        }
+
+        return $providers;
     }
 }
