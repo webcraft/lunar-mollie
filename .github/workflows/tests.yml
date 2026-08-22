@@ -10,18 +10,61 @@ jobs:
   laravel-tests:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        php: [ 8.2, 8.3 ]
-        laravel: [ 10.*, 11.* ]
-    name: PHP:${{ matrix.php }} / Laravel:${{ matrix.laravel }}
+        include:
+          # Lunar 1.3 (latest stable) supports Laravel 11 and 12.
+          # Laravel 12 + Lunar 1.3 requires PHP 8.3+ because cartalyst/converter 10 does.
+          - php: '8.2'
+            laravel: '11.*'
+            testbench: '9.*'
+            lunar: '1.3.0'
+          - php: '8.3'
+            laravel: '11.*'
+            testbench: '9.*'
+            lunar: '1.3.0'
+          - php: '8.3'
+            laravel: '12.*'
+            testbench: '10.*'
+            lunar: '1.3.0'
+          - php: '8.4'
+            laravel: '12.*'
+            testbench: '10.*'
+            lunar: '1.3.0'
+          - php: '8.5'
+            laravel: '12.*'
+            testbench: '10.*'
+            lunar: '1.3.0'
+
+          # Lunar 1.5 (beta) is the first release that supports Laravel 13.
+          # It requires PHP 8.3+ and Laravel 12 or 13.
+          - php: '8.3'
+            laravel: '12.*'
+            testbench: '10.*'
+            lunar: '1.5.0-beta.6'
+          - php: '8.4'
+            laravel: '13.*'
+            testbench: '11.*'
+            lunar: '1.5.0-beta.6'
+          - php: '8.5'
+            laravel: '13.*'
+            testbench: '11.*'
+            lunar: '1.5.0-beta.6'
+    name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }} / Lunar ${{ matrix.lunar }}
     steps:
-      - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-      - uses: actions/checkout@v3
+          extensions: bcmath, exif, intl, sqlite3
+          coverage: none
       - name: Install Composer Dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" --no-interaction --no-update --dev
-          composer update --prefer-stable --no-interaction --no-suggest
+          composer require \
+            "laravel/framework:${{ matrix.laravel }}" \
+            "orchestra/testbench:${{ matrix.testbench }}" \
+            "lunarphp/lunar:${{ matrix.lunar }}" \
+            --no-interaction --no-update
+          composer update --prefer-stable --prefer-dist --no-interaction
       - name: Execute tests
         run: composer test
