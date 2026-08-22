@@ -39,7 +39,8 @@ class TestCase extends \Orchestra\Testbench\TestCase
             MolliePaymentsServiceProvider::class,
         ];
 
-        // Lunar 1.3 still depends on these packages; Lunar 1.5 removed them.
+        // Lunar 1.3 uses Cartalyst Converter and kalnoy/nestedset.
+        // Lunar 1.5 dropped Converter and switched to lunarphp/nestedset.
         if (class_exists(ConverterServiceProvider::class)) {
             $providers[] = ConverterServiceProvider::class;
         }
