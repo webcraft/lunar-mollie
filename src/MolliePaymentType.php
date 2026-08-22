@@ -105,12 +105,17 @@ class MolliePaymentType extends AbstractPayment
                 );
             }
 
-            foreach ($payment->refunds() as $refund) {
-                $refundTransaction = $this->order->refunds->where('reference', $refund->id)->first();
-                if ($refundTransaction) {
-                    $refundTransaction->update([
-                        'status' => $refund->status,
-                    ]);
+            $hasRefunds = $payment->amountRefunded
+                && $payment->amountRefunded->value !== '0.00';
+
+            if ($hasRefunds) {
+                foreach ($payment->refunds() as $refund) {
+                    $refundTransaction = $this->order->refunds->where('reference', $refund->id)->first();
+                    if ($refundTransaction) {
+                        $refundTransaction->update([
+                            'status' => $refund->status,
+                        ]);
+                    }
                 }
             }
 

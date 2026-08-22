@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kalnoy\Nestedset\NestedSetServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Lunar\LunarServiceProvider;
+use Lunar\Nestedset\NestedSetServiceProvider as LunarNestedSetServiceProvider;
 use Mollie\Laravel\MollieServiceProvider;
 use Spatie\Activitylog\ActivitylogServiceProvider;
 use Spatie\LaravelBlink\BlinkServiceProvider;
@@ -45,6 +46,10 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
         if (class_exists(NestedSetServiceProvider::class)) {
             $providers[] = NestedSetServiceProvider::class;
+        }
+
+        if (class_exists(LunarNestedSetServiceProvider::class)) {
+            $providers[] = LunarNestedSetServiceProvider::class;
         }
 
         return $providers;
